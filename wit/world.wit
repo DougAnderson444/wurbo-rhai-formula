@@ -1,0 +1,53 @@
+package demo:form@0.1.0;
+
+interface context-types {
+ 
+  // Details required in order to add an event listener to an element
+  record listen-details {
+    selector: string,
+    ty: string,
+  } 
+
+  /// Optionally set the initial content of the component
+  record content {
+    revenue: option<s64>,
+    expenses: option<s64>,
+  }
+
+  /// Context passed into the component
+  variant context {
+    all-content(content),
+    revenue(s64),
+    expenses(s64),
+  }
+}
+
+interface wurbo-in {
+
+  use context-types.{listen-details};
+
+  // Add an event listener to the given element
+  addeventlistener: func(details: listen-details);
+
+}
+
+interface wurbo-out {
+
+  use context-types.{context};
+
+  // Optionally customize the configuration of the templates used to render the component
+  customize: func(templates: list<tuple<string, string>>) -> result<_, string>;
+
+  // renders the initial Web component with the given data
+  // and the target template to use as top level entry point
+  render: func(ctx: context) -> result<string, string>;
+
+  // activate listening 
+  activate: func(selectors: option<list<string>>);
+}
+
+/// An example world for the component to target.
+world main {
+  import wurbo-in;
+  export wurbo-out;
+}

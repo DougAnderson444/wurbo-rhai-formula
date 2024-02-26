@@ -1,0 +1,17 @@
+[package]
+name = "peerpiper-form"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wit-bindgen = { version = "0.19.1", default-features = false, features = ["realloc"] }
+wurbo = { path = "../wurbo/crates/wurbo" }
+rhai = "1.17.1"
+
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.component]
+package = "component:peerpiper-form"
+
+[package.metadata.component.dependencies]
