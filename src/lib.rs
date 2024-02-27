@@ -44,28 +44,28 @@ prelude_bindgen! {WurboGuest, Component, PageContext, Context, LAST_STATE}
 /// which is why it is not a Newtype wrapper like the others are.
 #[derive(Debug, Clone, Default)]
 pub struct PageContext {
-    revenue: i64,
-    expenses: i64,
+    revenue: Revenue,
+    expenses: Expenses,
     formula: Formula,
     target: Option<String>,
 }
 
-#[derive(Debug, Clone)]
-pub struct Revenue(pub i64);
+#[derive(Debug, Clone, Default)]
+pub struct Revenue(pub f64);
 
 impl Deref for Revenue {
-    type Target = i64;
+    type Target = f64;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Expenses(pub i64);
+#[derive(Debug, Clone, Default)]
+pub struct Expenses(pub f64);
 
 impl Deref for Expenses {
-    type Target = i64;
+    type Target = f64;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -95,10 +95,10 @@ impl StructObject for PageContext {
     fn get_field(&self, name: &str) -> Option<Value> {
         let engine = Engine::new();
         let mut scope = Scope::new();
-        scope.push("revenue", self.revenue);
-        scope.push("expenses", self.expenses);
+        scope.push("revenue", *self.revenue);
+        scope.push("expenses", *self.expenses);
 
-        let evaluated_formula = engine.eval_with_scope::<i64>(&mut scope, &self.formula.clone());
+        let evaluated_formula = engine.eval_with_scope::<f64>(&mut scope, &self.formula.clone());
 
         match name {
             "id" => {
@@ -106,9 +106,9 @@ impl StructObject for PageContext {
                 println!("id: {}", id);
                 Some(Value::from(id))
             }
-            "revenue" => Some(Value::from(self.revenue)),
-            "expenses" => Some(Value::from(self.expenses)),
-            "output" => Some(Value::from(self.revenue - self.expenses)),
+            "revenue" => Some(Value::from(*self.revenue)),
+            "expenses" => Some(Value::from(*self.expenses)),
+            "output" => Some(Value::from(*self.revenue - *self.expenses)),
             "formula" => Some(Value::from(self.formula.as_str())),
             "evaluated_formula" => match evaluated_formula {
                 Ok(result) => Some(Value::from(result)),
@@ -143,8 +143,8 @@ impl From<&context_types::Content> for PageContext {
     fn from(all: &context_types::Content) -> Self {
         println!("AllContent: {:?}", all);
         PageContext {
-            revenue: all.revenue.unwrap_or_default(),
-            expenses: all.expenses.unwrap_or_default(),
+            revenue: Revenue(all.revenue.unwrap_or_default()),
+            expenses: Expenses(all.expenses.unwrap_or_default()),
             formula: all.formula.clone().map(Formula).unwrap_or_default(),
             // None will use default of index.html, which is what we want
             target: None,
@@ -155,7 +155,7 @@ impl From<&context_types::Content> for PageContext {
 impl From<Revenue> for PageContext {
     fn from(rev: Revenue) -> Self {
         let mut last = LAST_STATE.lock().unwrap().clone().unwrap_or_default();
-        last.revenue = *rev;
+        last.revenue = rev.into();
         last
     }
 }
@@ -163,7 +163,7 @@ impl From<Revenue> for PageContext {
 impl From<Expenses> for PageContext {
     fn from(exp: Expenses) -> Self {
         let mut last = LAST_STATE.lock().unwrap().clone().unwrap_or_default();
-        last.expenses = *exp;
+        last.expenses = exp.into();
         last
     }
 }

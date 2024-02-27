@@ -10,16 +10,16 @@ interface context-types {
 
   /// Optionally set the initial content of the component
   record content {
-    revenue: option<s64>,
-    expenses: option<s64>,
+    revenue: option<float64>,
+    expenses: option<float64>,
     formula: option<string>,
   }
 
   /// Context passed into the component
   variant context {
     all-content(content),
-    revenue(s64),
-    expenses(s64),
+    revenue(float64),
+    expenses(float64),
     formula(string),
   }
 }
