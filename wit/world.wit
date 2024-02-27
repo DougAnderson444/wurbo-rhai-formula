@@ -12,6 +12,7 @@ interface context-types {
   record content {
     revenue: option<s64>,
     expenses: option<s64>,
+    formula: option<string>,
   }
 
   /// Context passed into the component
@@ -19,6 +20,7 @@ interface context-types {
     all-content(content),
     revenue(s64),
     expenses(s64),
+    formula(string),
   }
 }
 

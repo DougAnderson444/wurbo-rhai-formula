@@ -20,23 +20,24 @@ pub mod demo {
         }
       }
       /// Optionally set the initial content of the component
-      #[repr(C)]
-      #[derive(Clone, Copy)]
+      #[derive(Clone)]
       pub struct Content {
         pub revenue: Option<i64>,
         pub expenses: Option<i64>,
+        pub formula: Option<wit_bindgen::rt::string::String>,
       }
       impl ::core::fmt::Debug for Content {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-          f.debug_struct("Content").field("revenue", &self.revenue).field("expenses", &self.expenses).finish()
+          f.debug_struct("Content").field("revenue", &self.revenue).field("expenses", &self.expenses).field("formula", &self.formula).finish()
         }
       }
       /// Context passed into the component
-      #[derive(Clone, Copy)]
+      #[derive(Clone)]
       pub enum Context{
         AllContent(Content),
         Revenue(i64),
         Expenses(i64),
+        Formula(wit_bindgen::rt::string::String),
       }
       impl ::core::fmt::Debug for Context {
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -49,6 +50,9 @@ pub mod demo {
             }
             Context::Expenses(e) => {
               f.debug_tuple("Context::Expenses").field(e).finish()
+            }
+            Context::Formula(e) => {
+              f.debug_tuple("Context::Formula").field(e).finish()
             }
           }
         }
@@ -190,7 +194,7 @@ pub mod exports {
           #[doc(hidden)]
           #[export_name = "demo:form/wurbo-out@0.1.0#render"]
           #[allow(non_snake_case)]
-          unsafe extern "C" fn __export_render(arg0: i32,arg1: i64,arg2: i64,arg3: i32,arg4: i64,) -> i32 {
+          unsafe extern "C" fn __export_render(arg0: i32,arg1: i64,arg2: i64,arg3: i32,arg4: i64,arg5: i32,arg6: i32,arg7: i32,) -> i32 {
             #[allow(unused_imports)]
             use wit_bindgen::rt::{alloc, vec::Vec, string::String};
             
@@ -208,10 +212,10 @@ pub mod exports {
             #[cfg(target_arch="wasm32")]
             wit_bindgen::rt::run_ctors_once();
             
-            use super::super::super::super::demo::form::context_types::Context as V0;
-            let v0 = match arg0 {
+            use super::super::super::super::demo::form::context_types::Context as V2;
+            let v2 = match arg0 {
               0 => {
-                let e0 = super::super::super::super::demo::form::context_types::Content{
+                let e2 = super::super::super::super::demo::form::context_types::Content{
                   revenue: match arg1 as i32 {
                     0 => None,
                     1 => {
@@ -228,41 +232,63 @@ pub mod exports {
                     }
                     _ => wit_bindgen::rt::invalid_enum_discriminant(),
                   },
+                  formula: match arg5 {
+                    0 => None,
+                    1 => {
+                      let e = {
+                        let len0 = arg7 as usize;
+                        let bytes0 = Vec::from_raw_parts(arg6 as *mut _, len0, len0);
+                        
+                        wit_bindgen::rt::string_lift(bytes0)
+                      };
+                      Some(e)
+                    }
+                    _ => wit_bindgen::rt::invalid_enum_discriminant(),
+                  },
                 };
-                V0::AllContent(e0)
+                V2::AllContent(e2)
               }
               1 => {
-                let e0 = arg1;
-                V0::Revenue(e0)
+                let e2 = arg1;
+                V2::Revenue(e2)
+              }
+              2 => {
+                let e2 = arg1;
+                V2::Expenses(e2)
               }
               n => {
-                debug_assert_eq!(n, 2, "invalid enum discriminant");
-                let e0 = arg1;
-                V0::Expenses(e0)
+                debug_assert_eq!(n, 3, "invalid enum discriminant");
+                let e2 = {
+                  let len1 = arg2 as i32 as usize;
+                  let bytes1 = Vec::from_raw_parts(arg1 as i32 as *mut _, len1, len1);
+                  
+                  wit_bindgen::rt::string_lift(bytes1)
+                };
+                V2::Formula(e2)
               }
             };
-            let result1 = <_GuestImpl as Guest>::render(v0);
-            let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
-            match result1 {
+            let result3 = <_GuestImpl as Guest>::render(v2);
+            let ptr4 = _RET_AREA.0.as_mut_ptr() as i32;
+            match result3 {
               Ok(e) => { {
-                *((ptr2 + 0) as *mut u8) = (0i32) as u8;
-                let vec3 = (e.into_bytes()).into_boxed_slice();
-                let ptr3 = vec3.as_ptr() as i32;
-                let len3 = vec3.len() as i32;
-                ::core::mem::forget(vec3);
-                *((ptr2 + 8) as *mut i32) = len3;
-                *((ptr2 + 4) as *mut i32) = ptr3;
+                *((ptr4 + 0) as *mut u8) = (0i32) as u8;
+                let vec5 = (e.into_bytes()).into_boxed_slice();
+                let ptr5 = vec5.as_ptr() as i32;
+                let len5 = vec5.len() as i32;
+                ::core::mem::forget(vec5);
+                *((ptr4 + 8) as *mut i32) = len5;
+                *((ptr4 + 4) as *mut i32) = ptr5;
               } },
               Err(e) => { {
-                *((ptr2 + 0) as *mut u8) = (1i32) as u8;
-                let vec4 = (e.into_bytes()).into_boxed_slice();
-                let ptr4 = vec4.as_ptr() as i32;
-                let len4 = vec4.len() as i32;
-                ::core::mem::forget(vec4);
-                *((ptr2 + 8) as *mut i32) = len4;
-                *((ptr2 + 4) as *mut i32) = ptr4;
+                *((ptr4 + 0) as *mut u8) = (1i32) as u8;
+                let vec6 = (e.into_bytes()).into_boxed_slice();
+                let ptr6 = vec6.as_ptr() as i32;
+                let len6 = vec6.len() as i32;
+                ::core::mem::forget(vec6);
+                *((ptr4 + 8) as *mut i32) = len6;
+                *((ptr4 + 4) as *mut i32) = ptr6;
               } },
-            };ptr2
+            };ptr4
           }
           
           const _: () = {
@@ -365,7 +391,7 @@ pub mod exports {
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:main"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 598] = [0, 97, 115, 109, 13, 0, 1, 0, 0, 25, 22, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 101, 110, 99, 111, 100, 105, 110, 103, 4, 0, 7, 220, 3, 1, 65, 2, 1, 65, 8, 1, 66, 7, 1, 114, 2, 8, 115, 101, 108, 101, 99, 116, 111, 114, 115, 2, 116, 121, 115, 4, 0, 14, 108, 105, 115, 116, 101, 110, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 0, 1, 107, 120, 1, 114, 2, 7, 114, 101, 118, 101, 110, 117, 101, 2, 8, 101, 120, 112, 101, 110, 115, 101, 115, 2, 4, 0, 7, 99, 111, 110, 116, 101, 110, 116, 3, 0, 3, 1, 113, 3, 11, 97, 108, 108, 45, 99, 111, 110, 116, 101, 110, 116, 1, 4, 0, 7, 114, 101, 118, 101, 110, 117, 101, 1, 120, 0, 8, 101, 120, 112, 101, 110, 115, 101, 115, 1, 120, 0, 4, 0, 7, 99, 111, 110, 116, 101, 120, 116, 3, 0, 5, 3, 1, 29, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 99, 111, 110, 116, 101, 120, 116, 45, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 2, 3, 0, 0, 14, 108, 105, 115, 116, 101, 110, 45, 100, 101, 116, 97, 105, 108, 115, 1, 66, 4, 2, 3, 2, 1, 1, 4, 0, 14, 108, 105, 115, 116, 101, 110, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 0, 1, 64, 1, 7, 100, 101, 116, 97, 105, 108, 115, 1, 1, 0, 4, 0, 16, 97, 100, 100, 101, 118, 101, 110, 116, 108, 105, 115, 116, 101, 110, 101, 114, 1, 2, 3, 1, 24, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 119, 117, 114, 98, 111, 45, 105, 110, 64, 48, 46, 49, 46, 48, 5, 2, 2, 3, 0, 0, 7, 99, 111, 110, 116, 101, 120, 116, 1, 66, 14, 2, 3, 2, 1, 3, 4, 0, 7, 99, 111, 110, 116, 101, 120, 116, 3, 0, 0, 1, 111, 2, 115, 115, 1, 112, 2, 1, 106, 0, 1, 115, 1, 64, 1, 9, 116, 101, 109, 112, 108, 97, 116, 101, 115, 3, 0, 4, 4, 0, 9, 99, 117, 115, 116, 111, 109, 105, 122, 101, 1, 5, 1, 106, 1, 115, 1, 115, 1, 64, 1, 3, 99, 116, 120, 1, 0, 6, 4, 0, 6, 114, 101, 110, 100, 101, 114, 1, 7, 1, 112, 115, 1, 107, 8, 1, 64, 1, 9, 115, 101, 108, 101, 99, 116, 111, 114, 115, 9, 1, 0, 4, 0, 8, 97, 99, 116, 105, 118, 97, 116, 101, 1, 10, 4, 1, 25, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 119, 117, 114, 98, 111, 45, 111, 117, 116, 64, 48, 46, 49, 46, 48, 5, 4, 4, 1, 20, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 109, 97, 105, 110, 64, 48, 46, 49, 46, 48, 4, 0, 11, 10, 1, 0, 4, 109, 97, 105, 110, 3, 0, 0, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 50, 49, 46, 48, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 56, 46, 48];
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 621] = [0, 97, 115, 109, 13, 0, 1, 0, 0, 25, 22, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 45, 101, 110, 99, 111, 100, 105, 110, 103, 4, 0, 7, 243, 3, 1, 65, 2, 1, 65, 8, 1, 66, 8, 1, 114, 2, 8, 115, 101, 108, 101, 99, 116, 111, 114, 115, 2, 116, 121, 115, 4, 0, 14, 108, 105, 115, 116, 101, 110, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 0, 1, 107, 120, 1, 107, 115, 1, 114, 3, 7, 114, 101, 118, 101, 110, 117, 101, 2, 8, 101, 120, 112, 101, 110, 115, 101, 115, 2, 7, 102, 111, 114, 109, 117, 108, 97, 3, 4, 0, 7, 99, 111, 110, 116, 101, 110, 116, 3, 0, 4, 1, 113, 4, 11, 97, 108, 108, 45, 99, 111, 110, 116, 101, 110, 116, 1, 5, 0, 7, 114, 101, 118, 101, 110, 117, 101, 1, 120, 0, 8, 101, 120, 112, 101, 110, 115, 101, 115, 1, 120, 0, 7, 102, 111, 114, 109, 117, 108, 97, 1, 115, 0, 4, 0, 7, 99, 111, 110, 116, 101, 120, 116, 3, 0, 6, 3, 1, 29, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 99, 111, 110, 116, 101, 120, 116, 45, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 2, 3, 0, 0, 14, 108, 105, 115, 116, 101, 110, 45, 100, 101, 116, 97, 105, 108, 115, 1, 66, 4, 2, 3, 2, 1, 1, 4, 0, 14, 108, 105, 115, 116, 101, 110, 45, 100, 101, 116, 97, 105, 108, 115, 3, 0, 0, 1, 64, 1, 7, 100, 101, 116, 97, 105, 108, 115, 1, 1, 0, 4, 0, 16, 97, 100, 100, 101, 118, 101, 110, 116, 108, 105, 115, 116, 101, 110, 101, 114, 1, 2, 3, 1, 24, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 119, 117, 114, 98, 111, 45, 105, 110, 64, 48, 46, 49, 46, 48, 5, 2, 2, 3, 0, 0, 7, 99, 111, 110, 116, 101, 120, 116, 1, 66, 14, 2, 3, 2, 1, 3, 4, 0, 7, 99, 111, 110, 116, 101, 120, 116, 3, 0, 0, 1, 111, 2, 115, 115, 1, 112, 2, 1, 106, 0, 1, 115, 1, 64, 1, 9, 116, 101, 109, 112, 108, 97, 116, 101, 115, 3, 0, 4, 4, 0, 9, 99, 117, 115, 116, 111, 109, 105, 122, 101, 1, 5, 1, 106, 1, 115, 1, 115, 1, 64, 1, 3, 99, 116, 120, 1, 0, 6, 4, 0, 6, 114, 101, 110, 100, 101, 114, 1, 7, 1, 112, 115, 1, 107, 8, 1, 64, 1, 9, 115, 101, 108, 101, 99, 116, 111, 114, 115, 9, 1, 0, 4, 0, 8, 97, 99, 116, 105, 118, 97, 116, 101, 1, 10, 4, 1, 25, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 119, 117, 114, 98, 111, 45, 111, 117, 116, 64, 48, 46, 49, 46, 48, 5, 4, 4, 1, 20, 100, 101, 109, 111, 58, 102, 111, 114, 109, 47, 109, 97, 105, 110, 64, 48, 46, 49, 46, 48, 4, 0, 11, 10, 1, 0, 4, 109, 97, 105, 110, 3, 0, 0, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 50, 49, 46, 48, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 56, 46, 48];
 
 #[inline(never)]
 #[doc(hidden)]

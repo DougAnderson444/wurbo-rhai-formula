@@ -1,3 +1,4 @@
+#![feature(lazy_cell)]
 // Declare our module so it's included in our crate
 mod bindings;
 
@@ -8,6 +9,11 @@ use bindings::demo::form::context_types;
 use bindings::demo::form::context_types::Context;
 use bindings::demo::form::wurbo_in;
 use bindings::exports::demo::form::wurbo_out::Guest as WurboGuest;
+use rhai::Scope;
+use rhai::{Engine, EvalAltResult};
+use std::sync::LazyLock;
+use std::sync::Mutex;
+use std::sync::OnceLock;
 use wurbo::jinja::{Entry, Index, Rest, Templates};
 use wurbo::prelude_bindgen;
 
@@ -40,6 +46,7 @@ prelude_bindgen! {WurboGuest, Component, PageContext, Context, LAST_STATE}
 pub struct PageContext {
     revenue: i64,
     expenses: i64,
+    formula: Formula,
     target: Option<String>,
 }
 
@@ -65,9 +72,34 @@ impl Deref for Expenses {
     }
 }
 
+/// Formula String
+#[derive(Debug, Clone)]
+struct Formula(String);
+
+impl Default for Formula {
+    fn default() -> Self {
+        Formula("revenue - expenses".to_string())
+    }
+}
+
+impl Deref for Formula {
+    type Target = String;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 /// Implement StructObject for PageContext so we can use these values in our minijinja templates
 impl StructObject for PageContext {
     fn get_field(&self, name: &str) -> Option<Value> {
+        let engine = Engine::new();
+        let mut scope = Scope::new();
+        scope.push("revenue", self.revenue);
+        scope.push("expenses", self.expenses);
+
+        let evaluated_formula = engine.eval_with_scope::<i64>(&mut scope, &self.formula.clone());
+
         match name {
             "id" => {
                 let id = wurbo::utils::rand_id();
@@ -77,6 +109,11 @@ impl StructObject for PageContext {
             "revenue" => Some(Value::from(self.revenue)),
             "expenses" => Some(Value::from(self.expenses)),
             "output" => Some(Value::from(self.revenue - self.expenses)),
+            "formula" => Some(Value::from(self.formula.as_str())),
+            "evaluated_formula" => match evaluated_formula {
+                Ok(result) => Some(Value::from(result)),
+                Err(err) => Some(Value::from(err.to_string())),
+            },
             _ => None,
         }
     }
@@ -96,6 +133,7 @@ impl From<&context_types::Context> for PageContext {
             context_types::Context::AllContent(all) => PageContext::from(all),
             context_types::Context::Revenue(rev) => PageContext::from(Revenue(*rev)),
             context_types::Context::Expenses(exp) => PageContext::from(Expenses(*exp)),
+            context_types::Context::Formula(form) => PageContext::from(Formula(form.clone())),
         }
     }
 }
@@ -107,6 +145,7 @@ impl From<&context_types::Content> for PageContext {
         PageContext {
             revenue: all.revenue.unwrap_or_default(),
             expenses: all.expenses.unwrap_or_default(),
+            formula: all.formula.clone().map(Formula).unwrap_or_default(),
             // None will use default of index.html, which is what we want
             target: None,
         }
@@ -125,6 +164,14 @@ impl From<Expenses> for PageContext {
     fn from(exp: Expenses) -> Self {
         let mut last = LAST_STATE.lock().unwrap().clone().unwrap_or_default();
         last.expenses = *exp;
+        last
+    }
+}
+
+impl From<Formula> for PageContext {
+    fn from(form: Formula) -> Self {
+        let mut last = LAST_STATE.lock().unwrap().clone().unwrap_or_default();
+        last.formula = form;
         last
     }
 }

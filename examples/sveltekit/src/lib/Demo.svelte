@@ -37,7 +37,7 @@
 		];
 
 		// load the import handles into the Wasm component and get the ES module returned
-		wurbo = new Wurbo({ arrayBuffer: wasmBytes, importables }, (payload) => {
+		wurbo = new Wurbo({ arrayBuffer: wasmBytes, importables, templates: null }, (payload) => {
 			// Relay emitted events as desired
 			console.log('Component event emitted: ', { payload });
 		});
@@ -78,7 +78,6 @@
 	<script src="https://cdn.tailwindcss.com"></script>
 </svelte:head>
 <div>
-	Demo
 	{#if renderedHTML}
 		{@html renderedHTML}
 	{/if}

@@ -4,10 +4,18 @@
       <td>Net</td>
       <td>
         <input
-          id="{{ id }}"
-          data-context-name="revenue"
           class="rounded border border-blue-400 bg-blue-100 text-neutral-700 p-2 m-2"
           value="{{ output }}"
+          type="text"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>Formula: {{ formula }}</td>
+      <td>
+        <input
+          class="rounded border border-blue-400 bg-blue-100 text-neutral-700 p-2 m-2"
+          value="{{ evaluated_formula }}"
           type="text"
         />
       </td>
