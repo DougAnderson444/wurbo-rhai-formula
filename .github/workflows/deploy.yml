@@ -13,6 +13,9 @@ on:
 jobs:
   build_site:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./examples/sveltekit
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -29,11 +32,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
-          working-directory: ./examples/sveltekit
           cache: npm
 
       - name: Install dependencies
-        working-directory: ./examples/sveltekit
         run: npm install
 
       - name: build
@@ -44,6 +45,7 @@ jobs:
           touch docs/.nojekyll
           cd examples/sveltekit
           npm run build
+        working-directory: .
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v1
