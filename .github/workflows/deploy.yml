@@ -68,6 +68,7 @@ jobs:
         with:
           # this should match the `pages` option in your adapter-static options
           path: "docs/"
+        working-directory: .
 
   deploy:
     needs: build_site
