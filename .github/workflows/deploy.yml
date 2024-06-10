@@ -29,12 +29,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
+          working-directory: ./examples/sveltekit
           cache: npm
 
       - name: Install dependencies
-        run: |
-          cd examples/sveltekit
-          npm install
+        working-directory: ./examples/sveltekit
+        run: npm install
 
       - name: build
         env:
