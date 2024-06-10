@@ -33,6 +33,7 @@ jobs:
         with:
           node-version: "lts/*"
           cache: npm
+          cache-dependency-path: ./examples/sveltekit/package-lock.json
 
       - name: Install dependencies
         run: npm install
