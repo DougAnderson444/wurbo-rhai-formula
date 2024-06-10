@@ -10,7 +10,7 @@
 	import output from './templates/output.html?raw';
 
 	// Import wasm component bytes as a url
-	import wasmURL from '../../../../target/wasm32-wasi/debug/peerpiper_form.wasm?url';
+	import wasmURL from '../../../../target/wasm32-wasi/debug/wurbo_rhai_formula.wasm?url';
 
 	/**
 	 * The rendered component as a string of HTML
