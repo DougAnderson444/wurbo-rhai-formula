@@ -42,11 +42,7 @@ jobs:
         env:
           BASE_PATH: ${{ env.BASE_PATH }}
           VITE_BASE: ${{ env.VITE_BASE }}
-        run: |
-          touch docs/.nojekyll
-          cd examples/sveltekit
-          npm run build
-        working-directory: .
+        run: npm run build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v1
