@@ -67,8 +67,7 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           # this should match the `pages` option in your adapter-static options
-          path: "docs/"
-        working-directory: .
+          path: "./examples/sveltekit/docs/"
 
   deploy:
     needs: build_site
