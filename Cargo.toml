@@ -4,9 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-wit-bindgen = { version = "0.19.1", default-features = false, features = ["realloc"] }
-wurbo = { path = "../wurbo/crates/wurbo" }
-rhai = "1.17.1"
+bitflags = "2.4.2"
+wit-bindgen-rt = "0.26.0"
+wurbo = "0.3.2"
+rhai = { version = "1.17.1", default-features = false, features = ["no_module"] }
 
 [lib]
 crate-type = ["cdylib"]
@@ -15,3 +16,15 @@ crate-type = ["cdylib"]
 package = "component:peerpiper-form"
 
 [package.metadata.component.dependencies]
+
+[profile.release]
+opt-level = "z"          # Optimize for size.
+lto = true              # Link Time Optimization
+codegen-units = 1        # allow for maximum size reduction optimizations
+strip = true             # Automatically strip symbols from the binary.
+panic = 'abort'          # Abort on panic
+debug = false
+debug-assertions = false
+overflow-checks = false
+incremental = false
+rpath = false

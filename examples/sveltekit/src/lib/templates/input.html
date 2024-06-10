@@ -1,0 +1,44 @@
+<div id="{{id}}" class="">
+	<table>
+		<tr>
+			<th>Title</th>
+			<th>Field</th>
+		</tr>
+		<tr>
+			<td>Revenue</td>
+			<td>
+				<input
+					id="{{ id|on('input') }}"
+					data-context-name="revenue"
+					class="rounded border border-blue-400 bg-blue-100 text-neutral-700 p-2 m-2"
+					value="{{ revenue }}"
+					type="text"
+				/>
+			</td>
+		</tr>
+		<tr>
+			<td>Expenses</td>
+			<td>
+				<input
+					id="{{ id|on('input') }}"
+					data-context-name="expenses"
+					class="rounded border border-blue-400 bg-blue-100 text-neutral-700 p-2 m-2"
+					value="{{ expenses }}"
+					type="text"
+				/>
+			</td>
+		</tr>
+		<tr>
+			<td>Formula</td>
+			<td>
+				<input
+					id="{{ id|on('input') }}"
+					data-context-name="formula"
+					class="rounded border border-blue-400 bg-blue-100 text-neutral-700 p-2 m-2"
+					value="{{ formula }}"
+					type="text"
+				/>
+			</td>
+		</tr>
+	</table>
+</div>

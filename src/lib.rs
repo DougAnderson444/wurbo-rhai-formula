@@ -1,5 +1,5 @@
-#![feature(lazy_cell)]
 // Declare our module so it's included in our crate
+#[allow(warnings)]
 mod bindings;
 
 use std::ops::Deref;
@@ -9,11 +9,8 @@ use bindings::demo::form::context_types;
 use bindings::demo::form::context_types::Context;
 use bindings::demo::form::wurbo_in;
 use bindings::exports::demo::form::wurbo_out::Guest as WurboGuest;
+use rhai::Engine;
 use rhai::Scope;
-use rhai::{Engine, EvalAltResult};
-use std::sync::LazyLock;
-use std::sync::Mutex;
-use std::sync::OnceLock;
 use wurbo::jinja::{Entry, Index, Rest, Templates};
 use wurbo::prelude_bindgen;
 
@@ -39,6 +36,8 @@ fn get_templates() -> Templates {
 
 // Macro builds the Component struct and implements the Guest trait for us, saving copy-and-paste
 prelude_bindgen! {WurboGuest, Component, PageContext, Context, LAST_STATE}
+
+bindings::export!(Component with_types_in bindings);
 
 /// PageContext is a struct of other structs that implement [StructObject],
 /// which is why it is not a Newtype wrapper like the others are.
@@ -101,11 +100,7 @@ impl StructObject for PageContext {
         let evaluated_formula = engine.eval_with_scope::<f64>(&mut scope, &self.formula.clone());
 
         match name {
-            "id" => {
-                let id = wurbo::utils::rand_id();
-                println!("id: {}", id);
-                Some(Value::from(id))
-            }
+            "id" => Some(Value::from(wurbo::utils::rand_id())),
             "revenue" => Some(Value::from(*self.revenue)),
             "expenses" => Some(Value::from(*self.expenses)),
             "output" => Some(Value::from(*self.revenue - *self.expenses)),
@@ -141,7 +136,6 @@ impl From<&context_types::Context> for PageContext {
 /// Implement From<context_types::AllContent> for PageContext so we can convert the incoming context
 impl From<&context_types::Content> for PageContext {
     fn from(all: &context_types::Content) -> Self {
-        println!("AllContent: {:?}", all);
         PageContext {
             revenue: Revenue(all.revenue.unwrap_or_default()),
             expenses: Expenses(all.expenses.unwrap_or_default()),
