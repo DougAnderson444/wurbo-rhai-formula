@@ -6,6 +6,13 @@ A simple example of how you can build a powerful dynamic formula system using:
 - [`Wurbo`](https://github.com/DougAnderson444/wurbo): Interactive WIT-Wasm, uses [`minijinja`](https://docs.rs/minijinja/latest/minijinja/) under the hood, and 
 - [`WIT`](https://component-model.bytecodealliance.org/) Powerful WebAssembly components
 
+## Why not just use ____?
+
+Why not just use:
+
+- `JavaScript`? JS can easily exfiltrate data, so it's a security risk. WIT WebAssembly components are sandboxed, so your data goes nowhere unless you say so.
+- `Excel/Sheets`? Excel cannot separate data from the template, and is easily copied/pirated. 
+
 ## A simple, flexible formula.
 
 We want our user to be able to calculate something amongst `revenue` and `expenses`, but we want to give them the flexibility to use any formula they want.
