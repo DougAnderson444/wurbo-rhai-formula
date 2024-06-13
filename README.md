@@ -1,6 +1,6 @@
-# Wurbo Rhai Formula
+# Wurbo Rhai Formulas
 
-A simple example of how you can build a powerful dynamic formula system using:
+A simple example of how you can build a powerful interactive, dynamic formula system using:
 
 - [`Rhai`](https://rhai.rs/) Dynamic formula
 - [`Wurbo`](https://github.com/DougAnderson444/wurbo): Interactive WIT-Wasm, uses [`minijinja`](https://docs.rs/minijinja/latest/minijinja/) under the hood, and 
@@ -31,23 +31,25 @@ let formula = "(revenue - expenses) * 0.5";
 
 This form can handle either of these formulas.
 
-## How to use
+## How it's done
 
-The key part is the `PageContext` struct that implements `StructObject` for `Rhai`. This allows us to use the values in the struct in our Rhai templates.
+The key part is the implementation of `StructObject` allows us to use the values in the struct in our Rhai templates. The evaluated formula then gets passed back as evaluated or error.
 
 ```rust
-/// Implement StructObject for PageContext so we can use these values in our minijinja templates
-impl StructObject for PageContext {
-    fn get_field(&self, name: &str) -> Option<Value> {
+/// Implement [`wurbo::prelude::Object`] for PageContext so we can use these values in our minijinja templates
+impl Object for PageContext {
+    fn get_value(self: &std::sync::Arc<Self>, key: &Value) -> Option<Value> {
         let engine = Engine::new();
         let mut scope = Scope::new();
-        scope.push("revenue", *self.revenue);
+        // var1
+        scope.push(self.var1.as_str(), *self.revenue);
         scope.push("expenses", *self.expenses);
 
         let evaluated_formula = engine.eval_with_scope::<f64>(&mut scope, &self.formula.clone());
 
-        match name {
+        match key.as_str()? {
             "id" => Some(Value::from(wurbo::utils::rand_id())),
+            "var1" => Some(Value::from(self.var1.clone())),
             "revenue" => Some(Value::from(*self.revenue)),
             "expenses" => Some(Value::from(*self.expenses)),
             "output" => Some(Value::from(*self.revenue - *self.expenses)),
@@ -58,11 +60,6 @@ impl StructObject for PageContext {
             },
             _ => None,
         }
-    }
-
-    /// So that debug will show the values
-    fn static_fields(&self) -> Option<&'static [&'static str]> {
-        Some(&["id", "revenue", "expenses", "output"])
     }
 }
 ```
