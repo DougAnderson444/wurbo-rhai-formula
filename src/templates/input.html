@@ -5,7 +5,15 @@
       <th>Field</th>
     </tr>
     <tr>
-      <td>Revenue</td>
+      <td>
+        <input
+          id="{{ id|on('input') }}"
+          data-context-name="var1"
+          class="rounded border border-blue-400 bg-blue-100 text-neutral-700 p-2 m-2"
+          value="{{ var1 }}"
+          type="text"
+        />
+      </td>
       <td>
         <input
           id="{{ id|on('input') }}"
