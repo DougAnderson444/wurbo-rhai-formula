@@ -43,11 +43,15 @@ bindings::export!(Component with_types_in bindings);
 /// which is why it is not a Newtype wrapper like the others are.
 #[derive(Debug, Clone, Default)]
 pub struct PageContext {
+    var1: String,
     revenue: Revenue,
     expenses: Expenses,
     formula: Formula,
     target: Option<String>,
 }
+
+#[derive(Debug, Clone, Default)]
+pub struct Var1(pub String);
 
 #[derive(Debug, Clone, Default)]
 pub struct Revenue(pub f64);
@@ -89,18 +93,20 @@ impl Deref for Formula {
     }
 }
 
-/// Implement StructObject for PageContext so we can use these values in our minijinja templates
-impl StructObject for PageContext {
-    fn get_field(&self, name: &str) -> Option<Value> {
+/// Implement [`wurbo::prelude::Object`] for PageContext so we can use these values in our minijinja templates
+impl Object for PageContext {
+    fn get_value(self: &std::sync::Arc<Self>, key: &Value) -> Option<Value> {
         let engine = Engine::new();
         let mut scope = Scope::new();
-        scope.push("revenue", *self.revenue);
+        // var1
+        scope.push(self.var1.as_str(), *self.revenue);
         scope.push("expenses", *self.expenses);
 
         let evaluated_formula = engine.eval_with_scope::<f64>(&mut scope, &self.formula.clone());
 
-        match name {
+        match key.as_str()? {
             "id" => Some(Value::from(wurbo::utils::rand_id())),
+            "var1" => Some(Value::from(self.var1.clone())),
             "revenue" => Some(Value::from(*self.revenue)),
             "expenses" => Some(Value::from(*self.expenses)),
             "output" => Some(Value::from(*self.revenue - *self.expenses)),
@@ -112,11 +118,6 @@ impl StructObject for PageContext {
             _ => None,
         }
     }
-
-    /// So that debug will show the values
-    fn static_fields(&self) -> Option<&'static [&'static str]> {
-        Some(&["id", "revenue", "expenses", "output"])
-    }
 }
 
 /// Implement From<context_types::Context> for PageContext so we can convert the incoming context
@@ -126,6 +127,8 @@ impl From<&context_types::Context> for PageContext {
         // Route depends on context
         match context {
             context_types::Context::AllContent(all) => PageContext::from(all),
+            // var1 is the name of the first variable in the formula
+            context_types::Context::Var1(var1) => PageContext::from(Var1(var1.clone())),
             context_types::Context::Revenue(rev) => PageContext::from(Revenue(*rev)),
             context_types::Context::Expenses(exp) => PageContext::from(Expenses(*exp)),
             context_types::Context::Formula(form) => PageContext::from(Formula(form.clone())),
@@ -137,12 +140,21 @@ impl From<&context_types::Context> for PageContext {
 impl From<&context_types::Content> for PageContext {
     fn from(all: &context_types::Content) -> Self {
         PageContext {
+            var1: "revenue".to_string(),
             revenue: Revenue(all.revenue.unwrap_or_default()),
             expenses: Expenses(all.expenses.unwrap_or_default()),
             formula: all.formula.clone().map(Formula).unwrap_or_default(),
             // None will use default of index.html, which is what we want
             target: None,
         }
+    }
+}
+
+impl From<Var1> for PageContext {
+    fn from(var1: Var1) -> Self {
+        let mut last = LAST_STATE.lock().unwrap().clone().unwrap_or_default();
+        last.var1 = var1.0;
+        last
     }
 }
 
