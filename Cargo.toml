@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 bitflags = "2.4.2"
 wit-bindgen-rt = "0.26.0"
-wurbo = "0.3.2"
+wurbo = "0.4.0"
 rhai = { version = "1.17.1", default-features = false, features = ["no_module"] }
 
 [lib]
