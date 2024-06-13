@@ -18,6 +18,8 @@ interface context-types {
   /// Context passed into the component
   variant context {
     all-content(content),
+    // The first variable name
+    var1(string),
     revenue(float64),
     expenses(float64),
     formula(string),

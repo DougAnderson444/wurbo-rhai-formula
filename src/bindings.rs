@@ -46,6 +46,8 @@ pub mod demo {
             #[derive(Clone)]
             pub enum Context {
                 AllContent(Content),
+                /// The first variable name
+                Var1(_rt::String),
                 Revenue(f64),
                 Expenses(f64),
                 Formula(_rt::String),
@@ -56,6 +58,7 @@ pub mod demo {
                         Context::AllContent(e) => {
                             f.debug_tuple("Context::AllContent").field(e).finish()
                         }
+                        Context::Var1(e) => f.debug_tuple("Context::Var1").field(e).finish(),
                         Context::Revenue(e) => f.debug_tuple("Context::Revenue").field(e).finish(),
                         Context::Expenses(e) => {
                             f.debug_tuple("Context::Expenses").field(e).finish()
@@ -194,10 +197,10 @@ pub mod exports {
                 ) -> *mut u8 {
                     #[cfg(target_arch = "wasm32")]
                     _rt::run_ctors_once();
-                    use super::super::super::super::demo::form::context_types::Context as V2;
-                    let v2 = match arg0 {
+                    use super::super::super::super::demo::form::context_types::Context as V3;
+                    let v3 = match arg0 {
                         0 => {
-                            let e2 =
+                            let e3 =
                                 super::super::super::super::demo::form::context_types::Content {
                                     revenue: match arg1.assume_init() as i64 as i32 {
                                         0 => None,
@@ -233,19 +236,10 @@ pub mod exports {
                                         _ => _rt::invalid_enum_discriminant(),
                                     },
                                 };
-                            V2::AllContent(e2)
+                            V3::AllContent(e3)
                         }
                         1 => {
-                            let e2 = f64::from_bits(arg1.assume_init() as i64 as u64);
-                            V2::Revenue(e2)
-                        }
-                        2 => {
-                            let e2 = f64::from_bits(arg1.assume_init() as i64 as u64);
-                            V2::Expenses(e2)
-                        }
-                        n => {
-                            debug_assert_eq!(n, 3, "invalid enum discriminant");
-                            let e2 = {
+                            let e3 = {
                                 let len1 = arg2 as usize;
                                 let bytes1 = _rt::Vec::from_raw_parts(
                                     arg1.as_ptr().cast::<*mut u8>().read().cast(),
@@ -255,32 +249,54 @@ pub mod exports {
 
                                 _rt::string_lift(bytes1)
                             };
-                            V2::Formula(e2)
+                            V3::Var1(e3)
+                        }
+                        2 => {
+                            let e3 = f64::from_bits(arg1.assume_init() as i64 as u64);
+                            V3::Revenue(e3)
+                        }
+                        3 => {
+                            let e3 = f64::from_bits(arg1.assume_init() as i64 as u64);
+                            V3::Expenses(e3)
+                        }
+                        n => {
+                            debug_assert_eq!(n, 4, "invalid enum discriminant");
+                            let e3 = {
+                                let len2 = arg2 as usize;
+                                let bytes2 = _rt::Vec::from_raw_parts(
+                                    arg1.as_ptr().cast::<*mut u8>().read().cast(),
+                                    len2,
+                                    len2,
+                                );
+
+                                _rt::string_lift(bytes2)
+                            };
+                            V3::Formula(e3)
                         }
                     };
-                    let result3 = T::render(v2);
-                    let ptr4 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
-                    match result3 {
+                    let result4 = T::render(v3);
+                    let ptr5 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    match result4 {
                         Ok(e) => {
-                            *ptr4.add(0).cast::<u8>() = (0i32) as u8;
-                            let vec5 = (e.into_bytes()).into_boxed_slice();
-                            let ptr5 = vec5.as_ptr().cast::<u8>();
-                            let len5 = vec5.len();
-                            ::core::mem::forget(vec5);
-                            *ptr4.add(8).cast::<usize>() = len5;
-                            *ptr4.add(4).cast::<*mut u8>() = ptr5.cast_mut();
-                        }
-                        Err(e) => {
-                            *ptr4.add(0).cast::<u8>() = (1i32) as u8;
+                            *ptr5.add(0).cast::<u8>() = (0i32) as u8;
                             let vec6 = (e.into_bytes()).into_boxed_slice();
                             let ptr6 = vec6.as_ptr().cast::<u8>();
                             let len6 = vec6.len();
                             ::core::mem::forget(vec6);
-                            *ptr4.add(8).cast::<usize>() = len6;
-                            *ptr4.add(4).cast::<*mut u8>() = ptr6.cast_mut();
+                            *ptr5.add(8).cast::<usize>() = len6;
+                            *ptr5.add(4).cast::<*mut u8>() = ptr6.cast_mut();
+                        }
+                        Err(e) => {
+                            *ptr5.add(0).cast::<u8>() = (1i32) as u8;
+                            let vec7 = (e.into_bytes()).into_boxed_slice();
+                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                            let len7 = vec7.len();
+                            ::core::mem::forget(vec7);
+                            *ptr5.add(8).cast::<usize>() = len7;
+                            *ptr5.add(4).cast::<*mut u8>() = ptr7.cast_mut();
                         }
                     };
-                    ptr4
+                    ptr5
                 }
                 #[doc(hidden)]
                 #[allow(non_snake_case)]
@@ -448,21 +464,22 @@ pub(crate) use __export_main_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.25.0:main:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 622] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xf3\x03\x01A\x02\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 630] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xfb\x03\x01A\x02\x01\
 A\x08\x01B\x08\x01r\x02\x08selectors\x02tys\x04\0\x0elisten-details\x03\0\0\x01k\
 u\x01ks\x01r\x03\x07revenue\x02\x08expenses\x02\x07formula\x03\x04\0\x07content\x03\
-\0\x04\x01q\x04\x0ball-content\x01\x05\0\x07revenue\x01u\0\x08expenses\x01u\0\x07\
-formula\x01s\0\x04\0\x07context\x03\0\x06\x03\x01\x1ddemo:form/context-types@0.1\
-.0\x05\0\x02\x03\0\0\x0elisten-details\x01B\x04\x02\x03\x02\x01\x01\x04\0\x0elis\
-ten-details\x03\0\0\x01@\x01\x07details\x01\x01\0\x04\0\x10addeventlistener\x01\x02\
-\x03\x01\x18demo:form/wurbo-in@0.1.0\x05\x02\x02\x03\0\0\x07context\x01B\x0e\x02\
-\x03\x02\x01\x03\x04\0\x07context\x03\0\0\x01o\x02ss\x01p\x02\x01j\0\x01s\x01@\x01\
-\x09templates\x03\0\x04\x04\0\x09customize\x01\x05\x01j\x01s\x01s\x01@\x01\x03ct\
-x\x01\0\x06\x04\0\x06render\x01\x07\x01ps\x01k\x08\x01@\x01\x09selectors\x09\x01\
-\0\x04\0\x08activate\x01\x0a\x04\x01\x19demo:form/wurbo-out@0.1.0\x05\x04\x04\x01\
-\x14demo:form/main@0.1.0\x04\0\x0b\x0a\x01\0\x04main\x03\0\0\0G\x09producers\x01\
-\x0cprocessed-by\x02\x0dwit-component\x070.208.1\x10wit-bindgen-rust\x060.25.0";
+\0\x04\x01q\x05\x0ball-content\x01\x05\0\x04var1\x01s\0\x07revenue\x01u\0\x08exp\
+enses\x01u\0\x07formula\x01s\0\x04\0\x07context\x03\0\x06\x03\x01\x1ddemo:form/c\
+ontext-types@0.1.0\x05\0\x02\x03\0\0\x0elisten-details\x01B\x04\x02\x03\x02\x01\x01\
+\x04\0\x0elisten-details\x03\0\0\x01@\x01\x07details\x01\x01\0\x04\0\x10addevent\
+listener\x01\x02\x03\x01\x18demo:form/wurbo-in@0.1.0\x05\x02\x02\x03\0\0\x07cont\
+ext\x01B\x0e\x02\x03\x02\x01\x03\x04\0\x07context\x03\0\0\x01o\x02ss\x01p\x02\x01\
+j\0\x01s\x01@\x01\x09templates\x03\0\x04\x04\0\x09customize\x01\x05\x01j\x01s\x01\
+s\x01@\x01\x03ctx\x01\0\x06\x04\0\x06render\x01\x07\x01ps\x01k\x08\x01@\x01\x09s\
+electors\x09\x01\0\x04\0\x08activate\x01\x0a\x04\x01\x19demo:form/wurbo-out@0.1.\
+0\x05\x04\x04\x01\x14demo:form/main@0.1.0\x04\0\x0b\x0a\x01\0\x04main\x03\0\0\0G\
+\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.208.1\x10wit-bindgen\
+-rust\x060.25.0";
 
 #[inline(never)]
 #[doc(hidden)]
